@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KreditSmart - Sistem Kelayakan Kredit</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ── NAVBAR ─────────────────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <div class="logo">💳 KreditSmart</div>
+      <ul class="nav-links">
+        <li><a href="#beranda">Beranda</a></li>
+        <li><a href="#tentang">Tentang</a></li>
+        <li><a href="#teknologi">Teknologi</a></li>
+        <li><a href="#prediksi">Prediksi</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── HERO ───────────────────────────────────────────────────────── -->
+  <section id="beranda" class="hero-section">
+    <div class="container hero-content">
+      <div class="text-area">
+        <h1>Analisis <span class="highlight-blue">Kelayakan Kredit</span> dengan <span class="highlight-green">AI</span></h1>
+        <p>Sistem cerdas berbasis kecerdasan buatan untuk memprediksi kelayakan pinjaman nasabah secara akurat, cepat, dan transparan.</p>
+        <div class="cta-buttons">
+          <a href="#prediksi" class="btn primary">Mulai Prediksi</a>
+          <a href="#tentang" class="btn secondary">Pelajari Lebih Lanjut</a>
+        </div>
+        <div class="stats">
+          <div><strong>95%+</strong><span>Akurasi</span></div>
+          <div><strong>5000+</strong><span>Data Training</span></div>
+          <div><strong>18</strong><span>Fitur Analisis</span></div>
+        </div>
+      </div>
+      <div class="image-area">
+        <img src="{{ url_for('static', filename='hero.png') }}" alt="Kredit AI" onerror="this.style.display='none'">
+      </div>
+    </div>
+    <div class="ai-active-badge">🟢 AI Aktif</div>
+  </section>
+
+  <!-- ── TENTANG ────────────────────────────────────────────────────── -->
+  <section id="tentang" class="hero">
+    <img src="https://img.icons8.com/fluency/96/bank-cards.png" alt="Credit Icon" />
+    <h1 class="title">Tentang <span>KreditSmart</span></h1>
+    <p class="description">Platform analisis kelayakan kredit berbasis AI yang membantu lembaga keuangan membuat keputusan pemberian pinjaman yang lebih akurat dan adil.</p>
+  </section>
+
+  <section class="features">
+    <div class="card biru">
+      <h3>Prediksi Akurat</h3>
+      <p>Menggunakan algoritma <strong>Random Forest</strong> dengan akurasi tinggi untuk menilai risiko kredit berdasarkan profil keuangan nasabah secara komprehensif.</p>
+    </div>
+    <div class="card hijau">
+      <h3>Analisis Menyeluruh</h3>
+      <p>Mempertimbangkan <strong>18 fitur</strong> meliputi skor kredit, riwayat pembayaran, rasio hutang, aset tabungan, dan profil pekerjaan nasabah.</p>
+    </div>
+    <div class="card kuning">
+      <h3>Keputusan Transparan</h3>
+      <p>Setiap prediksi disertai tingkat keyakinan model dan rekomendasi tindak lanjut yang jelas bagi analis kredit maupun nasabah.</p>
+    </div>
+  </section>
+
+  <!-- ── TEKNOLOGI ──────────────────────────────────────────────────── -->
+  <section id="teknologi" class="technology">
+    <h2>Teknologi yang Digunakan</h2>
+    <p>Stack teknologi modern dan terpercaya untuk performa optimal</p>
+    <div class="tech-grid">
+      <div class="tech-card orange">
+        <h3>Random Forest</h3>
+        <p>Algoritma ensemble berbasis Decision Trees dengan teknik Bagging. Membangun ratusan pohon keputusan secara paralel lalu mengambil voting mayoritas untuk hasil prediksi yang robust.</p>
+      </div>
+      <div class="tech-card blue">
+        <h3>SMOTE</h3>
+        <p>Teknik oversampling untuk menangani ketidakseimbangan kelas pada data kredit, sehingga model tidak bias terhadap kelas mayoritas.</p>
+      </div>
+      <div class="tech-card green">
+        <h3>Scikit-learn</h3>
+        <p>Library machine learning untuk preprocessing, training, dan evaluasi model dengan StandardScaler dan LabelEncoder.</p>
+      </div>
+      <div class="tech-card purple">
+        <h3>Flask & Python</h3>
+        <p>Backend ringan berbasis Flask untuk menyajikan prediksi model secara real-time melalui antarmuka web yang responsif.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FORM PREDIKSI ──────────────────────────────────────────────── -->
+  <section id="prediksi" class="section">
+    <div class="container">
+      <h2>Formulir Prediksi Kelayakan Kredit</h2>
+      <p class="section-subtitle">Isi data nasabah di bawah ini untuk mendapatkan hasil analisis kredit.</p>
+
+      <form action="/predict" method="POST" class="predict-form">
+
+        <!-- ── DATA PRIBADI ── -->
+        <div class="form-group-title">👤 Data Pribadi & Pekerjaan</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="usia">Usia (tahun)</label>
+            <input type="number" name="usia" id="usia" min="17" max="80" placeholder="cth: 35" required>
+          </div>
+          <div class="form-field">
+            <label for="status_pekerjaan">Status Pekerjaan</label>
+            <select name="status_pekerjaan" id="status_pekerjaan" required>
+              <option value="" disabled selected>Pilih status...</option>
+              <option value="Bekerja">Bekerja</option>
+              <option value="Wiraswasta">Wiraswasta</option>
+              <option value="Mahasiswa">Mahasiswa</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="lama_bekerja_tahun">Lama Bekerja (tahun)</label>
+            <input type="number" step="0.5" name="lama_bekerja_tahun" id="lama_bekerja_tahun" min="0" placeholder="cth: 5" required>
+          </div>
+          <div class="form-field">
+            <label for="pendapatan_tahunan">Pendapatan Tahunan (Rp)</label>
+            <input type="number" name="pendapatan_tahunan" id="pendapatan_tahunan" min="0" placeholder="cth: 120000000" required>
+          </div>
+        </div>
+
+        <!-- ── PROFIL KREDIT ── -->
+        <div class="form-group-title">📊 Profil Kredit</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="skor_kredit">Skor Kredit (300–850)</label>
+            <input type="number" name="skor_kredit" id="skor_kredit" min="300" max="850" placeholder="cth: 700" required>
+          </div>
+          <div class="form-field">
+            <label for="lama_riwayat_kredit_tahun">Lama Riwayat Kredit (tahun)</label>
+            <input type="number" step="0.5" name="lama_riwayat_kredit_tahun" id="lama_riwayat_kredit_tahun" min="0" placeholder="cth: 8" required>
+          </div>
+          <div class="form-field">
+            <label for="gagal_bayar_tercatat">Gagal Bayar Tercatat</label>
+            <input type="number" name="gagal_bayar_tercatat" id="gagal_bayar_tercatat" min="0" placeholder="cth: 0" required>
+          </div>
+          <div class="form-field">
+            <label for="tunggakan_2thn_terakhir">Tunggakan 2 Tahun Terakhir</label>
+            <input type="number" name="tunggakan_2thn_terakhir" id="tunggakan_2thn_terakhir" min="0" placeholder="cth: 0" required>
+          </div>
+          <div class="form-field">
+            <label for="catatan_negatif">Catatan Negatif</label>
+            <input type="number" name="catatan_negatif" id="catatan_negatif" min="0" placeholder="cth: 0" required>
+          </div>
+        </div>
+
+        <!-- ── ASET & HUTANG ── -->
+        <div class="form-group-title">💰 Aset & Kewajiban</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="aset_tabungan">Aset Tabungan (Rp)</label>
+            <input type="number" name="aset_tabungan" id="aset_tabungan" min="0" placeholder="cth: 50000000" required>
+          </div>
+          <div class="form-field">
+            <label for="hutang_saat_ini">Hutang Saat Ini (Rp)</label>
+            <input type="number" name="hutang_saat_ini" id="hutang_saat_ini" min="0" placeholder="cth: 10000000" required>
+          </div>
+        </div>
+
+        <!-- ── DETAIL PINJAMAN ── -->
+        <div class="form-group-title">📋 Detail Pinjaman</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="tipe_produk">Tipe Produk</label>
+            <select name="tipe_produk" id="tipe_produk" required>
+              <option value="" disabled selected>Pilih produk...</option>
+              <option value="Kartu Kredit">Kartu Kredit</option>
+              <option value="Pinjaman Pribadi">Pinjaman Pribadi</option>
+              <option value="Kredit Berjalan">Kredit Berjalan</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="tujuan_pinjaman">Tujuan Pinjaman</label>
+            <select name="tujuan_pinjaman" id="tujuan_pinjaman" required>
+              <option value="" disabled selected>Pilih tujuan...</option>
+              <option value="Bisnis">Bisnis</option>
+              <option value="Renovasi Rumah">Renovasi Rumah</option>
+              <option value="Konsolidasi Hutang">Konsolidasi Hutang</option>
+              <option value="Pendidikan">Pendidikan</option>
+              <option value="Pribadi">Pribadi</option>
+              <option value="Medis">Medis</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="jumlah_pinjaman">Jumlah Pinjaman (Rp)</label>
+            <input type="number" name="jumlah_pinjaman" id="jumlah_pinjaman" min="0" placeholder="cth: 50000000" required>
+          </div>
+          <div class="form-field">
+            <label for="suku_bunga">Suku Bunga (%)</label>
+            <input type="number" step="0.01" name="suku_bunga" id="suku_bunga" min="0" max="100" placeholder="cth: 12.5" required>
+          </div>
+        </div>
+
+        <div class="form-submit">
+          <button type="submit" class="btn primary btn-large">🔍 Analisis Kelayakan Kredit</button>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>© 2025 KreditSmart — Sistem Analisis Kelayakan Kredit berbasis AI | Ditenagai oleh Random Forest & Flask</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
