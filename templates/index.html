@@ -3,108 +3,488 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KreditSmart - Sistem Kelayakan Kredit</title>
+  <title>KreditSmart — Analisis Kelayakan Kredit Berbasis AI</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:      #0b1120;
+      --ink-mid:  #334155;
+      --ink-soft: #64748b;
+      --surface:  #f8fafc;
+      --white:    #ffffff;
+      --blue:     #2563eb;
+      --blue-lt:  #dbeafe;
+      --teal:     #0891b2;
+      --teal-lt:  #cffafe;
+      --amber:    #d97706;
+      --amber-lt: #fef3c7;
+      --green:    #059669;
+      --green-lt: #d1fae5;
+      --red:      #dc2626;
+      --border:   #e2e8f0;
+      --radius:   1rem;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--surface);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem; color: var(--ink);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .logo span { color: var(--blue); }
+    .nav-links { list-style: none; display: flex; gap: 2rem; }
+    .nav-links a {
+      text-decoration: none; font-size: 0.875rem;
+      font-weight: 500; color: var(--ink-mid);
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-pill {
+      background: var(--ink); color: white;
+      padding: 0.45rem 1.2rem; border-radius: 50px;
+      font-size: 0.8rem; font-weight: 600;
+      text-decoration: none;
+      transition: background .2s;
+    }
+    .nav-pill:hover { background: var(--blue); }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 1200px; margin: 0 auto;
+      padding: 5rem 2rem 4rem;
+      display: grid; grid-template-columns: 1fr 420px;
+      gap: 4rem; align-items: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--blue-lt); color: var(--blue);
+      padding: 0.35rem 1rem; border-radius: 50px;
+      font-size: 0.78rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.6px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-eyebrow::before { content: "●"; font-size: 0.5rem; }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 3.2rem; line-height: 1.15;
+      color: var(--ink); margin-bottom: 1.25rem;
+    }
+    .hero h1 em { font-style: italic; color: var(--blue); }
+    .hero p {
+      font-size: 1.05rem; color: var(--ink-soft);
+      max-width: 480px; margin-bottom: 2rem;
+    }
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--blue); color: white;
+      padding: 0.85rem 2rem; border-radius: 50px;
+      text-decoration: none; font-weight: 700; font-size: 0.9rem;
+      transition: all .2s;
+      box-shadow: 0 4px 14px rgba(37,99,235,.35);
+    }
+    .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .btn-ghost {
+      background: white; color: var(--ink);
+      padding: 0.85rem 2rem; border-radius: 50px;
+      text-decoration: none; font-weight: 600; font-size: 0.9rem;
+      border: 1.5px solid var(--border);
+      transition: all .2s;
+    }
+    .btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+
+    .hero-stats {
+      display: flex; gap: 2rem; margin-top: 3rem;
+      padding-top: 2rem; border-top: 1px solid var(--border);
+    }
+    .stat strong { display: block; font-size: 1.6rem; font-weight: 800; color: var(--blue); }
+    .stat span { font-size: 0.8rem; color: var(--ink-soft); font-weight: 500; }
+
+    /* Hero visual card */
+    .hero-card {
+      background: white; border-radius: 1.5rem;
+      padding: 1.75rem;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.12);
+      border: 1px solid var(--border);
+    }
+    .hero-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .hc-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-soft); }
+    .hc-badge {
+      background: var(--green-lt); color: var(--green);
+      font-size: 0.75rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 50px;
+    }
+    .hc-score {
+      font-family: 'DM Serif Display', serif;
+      font-size: 3.5rem; color: var(--green);
+      line-height: 1; margin-bottom: 0.25rem;
+    }
+    .hc-sub { font-size: 0.8rem; color: var(--ink-soft); margin-bottom: 1.5rem; }
+    .hc-bar-wrap { margin-bottom: 1rem; }
+    .hc-bar-label {
+      display: flex; justify-content: space-between;
+      font-size: 0.78rem; font-weight: 600; color: var(--ink-mid);
+      margin-bottom: 4px;
+    }
+    .hc-bar { height: 8px; background: #e2e8f0; border-radius: 50px; overflow: hidden; }
+    .hc-bar-fill { height: 100%; border-radius: 50px; }
+    .fill-blue { background: var(--blue); }
+    .fill-teal { background: var(--teal); }
+    .fill-amber { background: var(--amber); }
+    .hc-features {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1.25rem;
+      padding-top: 1.25rem; border-top: 1px solid var(--border);
+    }
+    .hc-feat {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 50px; padding: 3px 10px;
+      font-size: 0.72rem; font-weight: 600; color: var(--ink-mid);
+    }
+
+    /* ── SECTION COMMON ── */
+    .section {
+      max-width: 1200px; margin: 0 auto; padding: 5rem 2rem;
+    }
+    .section-tag {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--blue); margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.2rem; color: var(--ink);
+      margin-bottom: 0.75rem;
+    }
+    .section-desc { font-size: 1rem; color: var(--ink-soft); max-width: 600px; }
+
+    /* ── FITUR CARDS ── */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem; margin-top: 3rem;
+    }
+    .feat-card {
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.75rem;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .feat-card:hover { box-shadow: 0 12px 28px rgba(0,0,0,.07); transform: translateY(-2px); }
+    .feat-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 1rem;
+    }
+    .ic-blue { background: var(--blue-lt); }
+    .ic-teal { background: var(--teal-lt); }
+    .ic-amber { background: var(--amber-lt); }
+    .ic-green { background: var(--green-lt); }
+    .feat-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .feat-card p { font-size: 0.875rem; color: var(--ink-soft); line-height: 1.65; }
+
+    /* ── TEKNOLOGI ── */
+    .tech-strip {
+      background: var(--ink); border-radius: 1.5rem;
+      padding: 3.5rem; margin: 0 2rem;
+      max-width: 1200px; margin: 0 auto 0;
+    }
+    .tech-strip .section-title { color: white; }
+    .tech-strip .section-desc { color: #94a3b8; }
+    .tech-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1rem; margin-top: 2.5rem;
+    }
+    .tech-card {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--radius); padding: 1.5rem;
+    }
+    .tech-card h4 {
+      font-size: 0.875rem; font-weight: 700; color: white;
+      margin-bottom: 0.5rem;
+    }
+    .tech-card p { font-size: 0.8rem; color: #94a3b8; line-height: 1.6; }
+    .tech-dot {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; margin-bottom: 0.85rem;
+    }
+    .td-orange { background: #7c2d12; }
+    .td-blue   { background: #1e3a5f; }
+    .td-green  { background: #064e3b; }
+    .td-purple { background: #3b0764; }
+
+    /* ── FORM SECTION ── */
+    .form-section {
+      max-width: 1200px; margin: 0 auto;
+      padding: 5rem 2rem 6rem;
+    }
+    .form-wrap {
+      background: white; border-radius: 1.5rem;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,.05);
+      margin-top: 2.5rem;
+    }
+    .form-group {
+      padding: 2rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-group:last-of-type { border-bottom: none; }
+    .group-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+    .group-num {
+      width: 28px; height: 28px;
+      background: var(--ink); color: white;
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 0.75rem; font-weight: 800;
+      flex-shrink: 0;
+    }
+    .group-title { font-size: 0.9rem; font-weight: 700; color: var(--ink); }
+    .group-sub { font-size: 0.78rem; color: var(--ink-soft); margin-left: auto; }
+    .form-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .form-grid.col2 { grid-template-columns: repeat(2, 1fr); }
+    .form-grid.col4 { grid-template-columns: repeat(4, 1fr); }
+    .form-field label {
+      display: block; font-size: 0.78rem;
+      font-weight: 600; color: var(--ink-mid);
+      margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.3px;
+    }
+    .form-field input, .form-field select {
+      width: 100%; padding: 0.7rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 0.625rem;
+      font-size: 0.9rem; font-family: 'Inter', sans-serif;
+      color: var(--ink); background: var(--surface);
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+      appearance: none;
+    }
+    .form-field input:focus, .form-field select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+      background: white;
+    }
+    .form-field input::placeholder { color: #94a3b8; }
+
+    /* Computed fields */
+    .field-computed input {
+      background: var(--blue-lt);
+      border-color: #bfdbfe;
+      color: var(--blue);
+      font-weight: 700;
+    }
+    .field-hint { font-size: 0.7rem; color: var(--ink-soft); margin-top: 4px; }
+
+    /* Form footer */
+    .form-footer {
+      padding: 2rem 2.5rem;
+      background: linear-gradient(to right, #f8fafc, #eef2ff);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .form-footer-note { font-size: 0.8rem; color: var(--ink-soft); }
+    .form-footer-note strong { color: var(--ink); }
+    .btn-submit {
+      background: var(--blue); color: white;
+      border: none; cursor: pointer;
+      padding: 0.9rem 2.5rem; border-radius: 50px;
+      font-size: 0.95rem; font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      display: flex; align-items: center; gap: 8px;
+      transition: all .2s;
+      box-shadow: 0 4px 14px rgba(37,99,235,.35);
+    }
+    .btn-submit:hover { background: #1d4ed8; transform: translateY(-1px); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none; border-top: 1px solid var(--border);
+      max-width: 1200px; margin: 0 auto;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center; padding: 2rem;
+      font-size: 0.8rem; color: var(--ink-soft);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-card { display: none; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .tech-grid { grid-template-columns: 1fr 1fr; }
+      .form-grid.col4, .form-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2.2rem; }
+      .features-grid { grid-template-columns: 1fr; }
+      .tech-grid { grid-template-columns: 1fr; }
+      .form-grid, .form-grid.col2, .form-grid.col4 { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ── NAVBAR ─────────────────────────────────────────────────────── -->
+  <!-- ── NAVBAR ── -->
   <nav class="navbar">
-    <div class="container nav-container">
-      <div class="logo">💳 KreditSmart</div>
+    <div class="nav-inner">
+      <div class="logo">💳 <span>Kredit</span>Smart</div>
       <ul class="nav-links">
         <li><a href="#beranda">Beranda</a></li>
-        <li><a href="#tentang">Tentang</a></li>
+        <li><a href="#fitur">Fitur</a></li>
         <li><a href="#teknologi">Teknologi</a></li>
         <li><a href="#prediksi">Prediksi</a></li>
       </ul>
+      <a href="#prediksi" class="nav-pill">Mulai Analisis →</a>
     </div>
   </nav>
 
-  <!-- ── HERO ───────────────────────────────────────────────────────── -->
-  <section id="beranda" class="hero-section">
-    <div class="container hero-content">
-      <div class="text-area">
-        <h1>Analisis <span class="highlight-blue">Kelayakan Kredit</span> dengan <span class="highlight-green">AI</span></h1>
-        <p>Sistem cerdas berbasis kecerdasan buatan untuk memprediksi kelayakan pinjaman nasabah secara akurat, cepat, dan transparan.</p>
-        <div class="cta-buttons">
-          <a href="#prediksi" class="btn primary">Mulai Prediksi</a>
-          <a href="#tentang" class="btn secondary">Pelajari Lebih Lanjut</a>
+  <!-- ── HERO ── -->
+  <section id="beranda">
+    <div class="hero">
+      <div class="hero-text">
+        <div class="hero-eyebrow">Model AI Aktif &amp; Siap</div>
+        <h1>Prediksi <em>kelayakan kredit</em> secara akurat dengan AI</h1>
+        <p>Sistem cerdas berbasis Random Forest yang menganalisis 18 fitur keuangan nasabah — dari skor kredit hingga rasio hutang — untuk keputusan pinjaman yang lebih tepat dan adil.</p>
+        <div class="hero-cta">
+          <a href="#prediksi" class="btn-primary">Analisis Sekarang</a>
+          <a href="#fitur" class="btn-ghost">Pelajari Cara Kerja</a>
         </div>
-        <div class="stats">
-          <div><strong>95%+</strong><span>Akurasi</span></div>
-          <div><strong>5000+</strong><span>Data Training</span></div>
-          <div><strong>18</strong><span>Fitur Analisis</span></div>
+        <div class="hero-stats">
+          <div class="stat"><strong>90%</strong><span>Akurasi Model</span></div>
+          <div class="stat"><strong>18</strong><span>Fitur Analisis</span></div>
+          <div class="stat"><strong>SMOTE</strong><span>Class Balancing</span></div>
+          <div class="stat"><strong>300</strong><span>Decision Trees</span></div>
         </div>
       </div>
-      <div class="image-area">
-        <img src="{{ url_for('static', filename='hero.png') }}" alt="Kredit AI" onerror="this.style.display='none'">
+      <div class="hero-card logo-card">
+    <img src="static//logo.png" alt="Kredit Smart AI" class="hero-logo">
+</div>
+    </div>
+  <hr class="divider">
+
+  <!-- ── FITUR ── -->
+  <section id="fitur" class="section">
+    <div class="section-tag">Keunggulan Sistem</div>
+    <h2 class="section-title">Dirancang untuk keputusan kredit yang lebih baik</h2>
+    <p class="section-desc">Setiap komponen dioptimalkan untuk akurasi, transparansi, dan kemudahan penggunaan oleh analis kredit.</p>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon ic-blue">🎯</div>
+        <h3>Prediksi Presisi Tinggi</h3>
+        <p>Random Forest dengan 300 pohon keputusan dan <em>class_weight="balanced"</em> memastikan prediksi yang adil untuk semua profil nasabah.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon ic-teal">⚖️</div>
+        <h3>Penanganan Ketidakseimbangan Data</h3>
+        <p>Teknik SMOTE menyeimbangkan distribusi kelas sebelum pelatihan, sehingga model tidak bias terhadap kelas mayoritas.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon ic-amber">📊</div>
+        <h3>18 Fitur Analisis</h3>
+        <p>Mencakup skor kredit, rasio hutang, riwayat pembayaran, aset tabungan, profil pekerjaan, tujuan pinjaman, dan lebih banyak lagi.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon ic-green">🔒</div>
+        <h3>Normalisasi Data Otomatis</h3>
+        <p>StandardScaler memastikan semua fitur numerik berada pada skala yang sama, mencegah dominasi fitur berskala besar.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon ic-blue">📈</div>
+        <h3>Tingkat Keyakinan Model</h3>
+        <p>Setiap prediksi disertai confidence score berdasarkan probabilitas voting dari seluruh pohon keputusan dalam ensemble.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon ic-teal">⚡</div>
+        <h3>Respons Real-time</h3>
+        <p>Model terlatih dimuat langsung dari file <code>.pkl</code> sehingga prediksi dihasilkan dalam hitungan milidetik tanpa pelatihan ulang.</p>
       </div>
     </div>
-    <div class="ai-active-badge">🟢 AI Aktif</div>
   </section>
 
-  <!-- ── TENTANG ────────────────────────────────────────────────────── -->
-  <section id="tentang" class="hero">
-    <img src="https://img.icons8.com/fluency/96/bank-cards.png" alt="Credit Icon" />
-    <h1 class="title">Tentang <span>KreditSmart</span></h1>
-    <p class="description">Platform analisis kelayakan kredit berbasis AI yang membantu lembaga keuangan membuat keputusan pemberian pinjaman yang lebih akurat dan adil.</p>
-  </section>
+  <hr class="divider">
 
-  <section class="features">
-    <div class="card biru">
-      <h3>Prediksi Akurat</h3>
-      <p>Menggunakan algoritma <strong>Random Forest</strong> dengan akurasi tinggi untuk menilai risiko kredit berdasarkan profil keuangan nasabah secara komprehensif.</p>
-    </div>
-    <div class="card hijau">
-      <h3>Analisis Menyeluruh</h3>
-      <p>Mempertimbangkan <strong>18 fitur</strong> meliputi skor kredit, riwayat pembayaran, rasio hutang, aset tabungan, dan profil pekerjaan nasabah.</p>
-    </div>
-    <div class="card kuning">
-      <h3>Keputusan Transparan</h3>
-      <p>Setiap prediksi disertai tingkat keyakinan model dan rekomendasi tindak lanjut yang jelas bagi analis kredit maupun nasabah.</p>
-    </div>
-  </section>
-
-  <!-- ── TEKNOLOGI ──────────────────────────────────────────────────── -->
-  <section id="teknologi" class="technology">
-    <h2>Teknologi yang Digunakan</h2>
-    <p>Stack teknologi modern dan terpercaya untuk performa optimal</p>
-    <div class="tech-grid">
-      <div class="tech-card orange">
+  <!-- ── TEKNOLOGI ── -->
+  <section id="teknologi" class="section">
+    <div class="section-tag">Stack Teknologi</div>
+    <h2 class="section-title">Dibangun di atas fondasi yang terpercaya</h2>
+    <p class="section-desc">Kombinasi library machine learning industri standar untuk performa dan reproduktabilitas optimal.</p>
+    <div class="tech-grid" style="margin-top:2.5rem; display:grid; grid-template-columns: repeat(4,1fr); gap:1rem;">
+      <div class="feat-card">
+        <div class="feat-icon ic-amber">🌲</div>
         <h3>Random Forest</h3>
-        <p>Algoritma ensemble berbasis Decision Trees dengan teknik Bagging. Membangun ratusan pohon keputusan secara paralel lalu mengambil voting mayoritas untuk hasil prediksi yang robust.</p>
+        <p style="font-size:.82rem;color:var(--ink-soft);">Ensemble 300 Decision Trees · max_depth=15 · min_samples_split=5 · class_weight balanced</p>
       </div>
-      <div class="tech-card blue">
+      <div class="feat-card">
+        <div class="feat-icon ic-blue">🔄</div>
         <h3>SMOTE</h3>
-        <p>Teknik oversampling untuk menangani ketidakseimbangan kelas pada data kredit, sehingga model tidak bias terhadap kelas mayoritas.</p>
+        <p style="font-size:.82rem;color:var(--ink-soft);">Synthetic Minority Oversampling diterapkan hanya pada data training, bukan test set.</p>
       </div>
-      <div class="tech-card green">
-        <h3>Scikit-learn</h3>
-        <p>Library machine learning untuk preprocessing, training, dan evaluasi model dengan StandardScaler dan LabelEncoder.</p>
+      <div class="feat-card">
+        <div class="feat-icon ic-teal">📐</div>
+        <h3>StandardScaler</h3>
+        <p style="font-size:.82rem;color:var(--ink-soft);">Scaling setelah SMOTE untuk menghindari kebocoran data. Fit pada train, transform pada test.</p>
       </div>
-      <div class="tech-card purple">
-        <h3>Flask & Python</h3>
-        <p>Backend ringan berbasis Flask untuk menyajikan prediksi model secara real-time melalui antarmuka web yang responsif.</p>
+      <div class="feat-card">
+        <div class="feat-icon ic-green">🐍</div>
+        <h3>Flask &amp; Scikit-learn</h3>
+        <p style="font-size:.82rem;color:var(--ink-soft);">Backend Flask menyajikan model .pkl + scaler + label_encoders secara real-time.</p>
       </div>
     </div>
   </section>
 
-  <!-- ── FORM PREDIKSI ──────────────────────────────────────────────── -->
-  <section id="prediksi" class="section">
-    <div class="container">
-      <h2>Formulir Prediksi Kelayakan Kredit</h2>
-      <p class="section-subtitle">Isi data nasabah di bawah ini untuk mendapatkan hasil analisis kredit.</p>
+  <hr class="divider">
 
-      <form action="/predict" method="POST" class="predict-form">
+  <!-- ── FORM PREDIKSI ── -->
+  <section id="prediksi" class="form-section">
+    <div class="section-tag">Formulir Prediksi</div>
+    <h2 class="section-title">Masukkan data nasabah untuk analisis</h2>
+    <p class="section-desc">Lengkapi semua bidang di bawah ini. Rasio keuangan akan dihitung otomatis berdasarkan data yang diisi.</p>
 
-        <!-- ── DATA PRIBADI ── -->
-        <div class="form-group-title">👤 Data Pribadi & Pekerjaan</div>
-        <div class="form-grid">
+    <form action="/predict" method="POST" class="form-wrap" id="kreditForm">
+
+      <!-- 1. Data Pribadi & Pekerjaan -->
+      <div class="form-group">
+        <div class="group-header">
+          <div class="group-num">1</div>
+          <span class="group-title">👤 Data Pribadi &amp; Pekerjaan</span>
+        </div>
+        <div class="form-grid col4">
           <div class="form-field">
             <label for="usia">Usia (tahun)</label>
-            <input type="number" name="usia" id="usia" min="17" max="80" placeholder="cth: 35" required>
+            <input type="number" name="usia" id="usia" min="17" max="80" placeholder="cth: 32" required>
           </div>
           <div class="form-field">
             <label for="status_pekerjaan">Status Pekerjaan</label>
@@ -117,31 +497,36 @@
           </div>
           <div class="form-field">
             <label for="lama_bekerja_tahun">Lama Bekerja (tahun)</label>
-            <input type="number" step="0.5" name="lama_bekerja_tahun" id="lama_bekerja_tahun" min="0" placeholder="cth: 5" required>
+            <input type="number" step="0.1" name="lama_bekerja_tahun" id="lama_bekerja_tahun" min="0" placeholder="cth: 6" required>
           </div>
           <div class="form-field">
             <label for="pendapatan_tahunan">Pendapatan Tahunan (Rp)</label>
             <input type="number" name="pendapatan_tahunan" id="pendapatan_tahunan" min="0" placeholder="cth: 120000000" required>
           </div>
         </div>
+      </div>
 
-        <!-- ── PROFIL KREDIT ── -->
-        <div class="form-group-title">📊 Profil Kredit</div>
-        <div class="form-grid">
+      <!-- 2. Profil Kredit -->
+      <div class="form-group">
+        <div class="group-header">
+          <div class="group-num">2</div>
+          <span class="group-title">📊 Profil Kredit &amp; Riwayat Pembayaran</span>
+        </div>
+        <div class="form-grid col4">
           <div class="form-field">
             <label for="skor_kredit">Skor Kredit (300–850)</label>
-            <input type="number" name="skor_kredit" id="skor_kredit" min="300" max="850" placeholder="cth: 700" required>
+            <input type="number" name="skor_kredit" id="skor_kredit" min="300" max="850" placeholder="cth: 750" required>
           </div>
           <div class="form-field">
-            <label for="lama_riwayat_kredit_tahun">Lama Riwayat Kredit (tahun)</label>
-            <input type="number" step="0.5" name="lama_riwayat_kredit_tahun" id="lama_riwayat_kredit_tahun" min="0" placeholder="cth: 8" required>
+            <label for="lama_riwayat_kredit_tahun">Lama Riwayat Kredit (thn)</label>
+            <input type="number" step="0.1" name="lama_riwayat_kredit_tahun" id="lama_riwayat_kredit_tahun" min="0" placeholder="cth: 8" required>
           </div>
           <div class="form-field">
             <label for="gagal_bayar_tercatat">Gagal Bayar Tercatat</label>
             <input type="number" name="gagal_bayar_tercatat" id="gagal_bayar_tercatat" min="0" placeholder="cth: 0" required>
           </div>
           <div class="form-field">
-            <label for="tunggakan_2thn_terakhir">Tunggakan 2 Tahun Terakhir</label>
+            <label for="tunggakan_2thn_terakhir">Tunggakan 2 Thn Terakhir</label>
             <input type="number" name="tunggakan_2thn_terakhir" id="tunggakan_2thn_terakhir" min="0" placeholder="cth: 0" required>
           </div>
           <div class="form-field">
@@ -149,10 +534,15 @@
             <input type="number" name="catatan_negatif" id="catatan_negatif" min="0" placeholder="cth: 0" required>
           </div>
         </div>
+      </div>
 
-        <!-- ── ASET & HUTANG ── -->
-        <div class="form-group-title">💰 Aset & Kewajiban</div>
-        <div class="form-grid">
+      <!-- 3. Aset & Kewajiban -->
+      <div class="form-group">
+        <div class="group-header">
+          <div class="group-num">3</div>
+          <span class="group-title">💰 Aset &amp; Kewajiban</span>
+        </div>
+        <div class="form-grid col2">
           <div class="form-field">
             <label for="aset_tabungan">Aset Tabungan (Rp)</label>
             <input type="number" name="aset_tabungan" id="aset_tabungan" min="0" placeholder="cth: 50000000" required>
@@ -162,10 +552,15 @@
             <input type="number" name="hutang_saat_ini" id="hutang_saat_ini" min="0" placeholder="cth: 10000000" required>
           </div>
         </div>
+      </div>
 
-        <!-- ── DETAIL PINJAMAN ── -->
-        <div class="form-group-title">📋 Detail Pinjaman</div>
-        <div class="form-grid">
+      <!-- 4. Detail Pinjaman -->
+      <div class="form-group">
+        <div class="group-header">
+          <div class="group-num">4</div>
+          <span class="group-title">📋 Detail Pinjaman</span>
+        </div>
+        <div class="form-grid col4">
           <div class="form-field">
             <label for="tipe_produk">Tipe Produk</label>
             <select name="tipe_produk" id="tipe_produk" required>
@@ -189,27 +584,101 @@
           </div>
           <div class="form-field">
             <label for="jumlah_pinjaman">Jumlah Pinjaman (Rp)</label>
-            <input type="number" name="jumlah_pinjaman" id="jumlah_pinjaman" min="0" placeholder="cth: 50000000" required>
+            <input type="number" name="jumlah_pinjaman" id="jumlah_pinjaman" min="0" placeholder="cth: 25000000" required>
           </div>
           <div class="form-field">
-            <label for="suku_bunga">Suku Bunga (%)</label>
-            <input type="number" step="0.01" name="suku_bunga" id="suku_bunga" min="0" max="100" placeholder="cth: 12.5" required>
+            <label for="suku_bunga">Suku Bunga (%/tahun)</label>
+            <input type="number" step="0.01" name="suku_bunga" id="suku_bunga" min="0" max="100" placeholder="cth: 8" required>
           </div>
         </div>
+      </div>
 
-        <div class="form-submit">
-          <button type="submit" class="btn primary btn-large">🔍 Analisis Kelayakan Kredit</button>
+      <!-- 5. Rasio Keuangan (auto-computed) -->
+      <div class="form-group">
+        <div class="group-header">
+          <div class="group-num">5</div>
+          <span class="group-title">📐 Rasio Keuangan</span>
+          <span class="group-sub">✨ Dihitung otomatis — bisa diedit manual</span>
         </div>
+        <div class="form-grid">
+          <div class="form-field field-computed">
+            <label for="rasio_hutang_terhadap_pendapatan">Rasio Hutang / Pendapatan</label>
+            <input type="number" step="0.001" name="rasio_hutang_terhadap_pendapatan" id="rasio_hutang_terhadap_pendapatan" min="0" placeholder="0.000" required>
+            <div class="field-hint">hutang_saat_ini ÷ pendapatan_tahunan</div>
+          </div>
+          <div class="form-field field-computed">
+            <label for="rasio_pinjaman_terhadap_pendapatan">Rasio Pinjaman / Pendapatan</label>
+            <input type="number" step="0.001" name="rasio_pinjaman_terhadap_pendapatan" id="rasio_pinjaman_terhadap_pendapatan" min="0" placeholder="0.000" required>
+            <div class="field-hint">jumlah_pinjaman ÷ pendapatan_tahunan</div>
+          </div>
+          <div class="form-field field-computed">
+            <label for="rasio_pembayaran_terhadap_pendapatan">Rasio Pembayaran / Pendapatan</label>
+            <input type="number" step="0.001" name="rasio_pembayaran_terhadap_pendapatan" id="rasio_pembayaran_terhadap_pendapatan" min="0" placeholder="0.000" required>
+            <div class="field-hint">estimasi cicilan tahunan ÷ pendapatan</div>
+          </div>
+        </div>
+      </div>
 
-      </form>
-    </div>
+      <!-- Submit -->
+      <div class="form-footer">
+        <div class="form-footer-note">
+          <strong>18 fitur</strong> dianalisis · Model Random Forest + StandardScaler · Hasil instan
+        </div>
+        <button type="submit" class="btn-submit">
+          🔍 Analisis Kelayakan Kredit
+        </button>
+      </div>
+
+    </form>
   </section>
 
-  <!-- ── FOOTER ─────────────────────────────────────────────────────── -->
-  <footer class="footer">
-    <p>© 2025 KreditSmart — Sistem Analisis Kelayakan Kredit berbasis AI | Ditenagai oleh Random Forest & Flask</p>
-  </footer>
+  <!-- ── FOOTER ── -->
+<footer>
+  <p>
+    <strong>Ujian Akhir Semester</strong><br>
+    Mata Kuliah Project Berbasis AI<br>
+    Dosen: Sadam Muhammad Natzir, M.Kom<br><br>
 
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <strong>Oleh:</strong><br>
+    1. Cornelis Yudhistira Laatrehe (23120033)<br>
+    2. Yevta Andriano Napa (23120032)<br>
+    3. Anang Maulana Kaharudin (23120038)<br><br>
+
+    STIKOM Uyelindo Kupang<br>
+    © 2026 KreditSmart — Sistem Analisis Kelayakan Kredit Berbasis AI | Random Forest · SMOTE · Flask · Scikit-learn
+  </p>
+</footer>
+  <script>
+    // Auto-compute rasio keuangan
+    function computeRasio() {
+      const pendapatan = parseFloat(document.getElementById('pendapatan_tahunan').value) || 0;
+      const hutang     = parseFloat(document.getElementById('hutang_saat_ini').value) || 0;
+      const pinjaman   = parseFloat(document.getElementById('jumlah_pinjaman').value) || 0;
+      const bunga      = parseFloat(document.getElementById('suku_bunga').value) || 0;
+
+      if (pendapatan > 0) {
+        document.getElementById('rasio_hutang_terhadap_pendapatan').value
+          = (hutang / pendapatan).toFixed(3);
+        document.getElementById('rasio_pinjaman_terhadap_pendapatan').value
+          = (pinjaman / pendapatan).toFixed(3);
+        // Estimasi cicilan tahunan: pinjaman × suku bunga sederhana
+        const cicilanTahunan = pinjaman * (bunga / 100);
+        document.getElementById('rasio_pembayaran_terhadap_pendapatan').value
+          = (cicilanTahunan / pendapatan).toFixed(3);
+      }
+    }
+
+    ['pendapatan_tahunan','hutang_saat_ini','jumlah_pinjaman','suku_bunga'].forEach(id => {
+      document.getElementById(id).addEventListener('input', computeRasio);
+    });
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+  </script>
 </body>
 </html>

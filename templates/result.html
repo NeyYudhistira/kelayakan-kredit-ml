@@ -3,320 +3,492 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KreditSmart - Hasil Analisis Kredit</title>
+  <title>KreditSmart — Hasil Analisis Kredit</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <style>
-    /* ── Result page specific styles ───────────────────────────── */
-    .result-hero {
-      background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
-      border-radius: 2rem;
-      padding: 2rem;
-      margin: 2rem auto;
-      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
-      border: 1px solid rgba(99,102,241,0.2);
-    }
-    .result-card {
-      background: white;
-      border-radius: 1.5rem;
-      padding: 2rem;
-      margin-top: 1.5rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-      border-left: 8px solid;
-      transition: transform 0.2s ease;
-    }
-    .result-card.layak     { border-left-color: #10b981; }
-    .result-card.tidak     { border-left-color: #ef4444; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    .status-badge {
-      display: inline-block;
-      padding: 0.5rem 1.5rem;
-      border-radius: 100px;
-      font-weight: 700;
-      font-size: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 1rem;
+    :root {
+      --ink:      #0b1120;
+      --ink-mid:  #334155;
+      --ink-soft: #64748b;
+      --surface:  #f8fafc;
+      --white:    #ffffff;
+      --blue:     #2563eb;
+      --blue-lt:  #dbeafe;
+      --teal:     #0891b2;
+      --green:    #059669;
+      --green-lt: #d1fae5;
+      --green-dk: #065f46;
+      --red:      #dc2626;
+      --red-lt:   #fee2e2;
+      --red-dk:   #991b1b;
+      --amber:    #d97706;
+      --border:   #e2e8f0;
+      --radius:   1rem;
     }
-    .badge-layak  { background: #d1fae5; color: #065f46; }
-    .badge-tidak  { background: #fee2e2; color: #991b1b; }
 
-    .confidence-bar {
-      background: #e2e8f0;
-      border-radius: 50px;
-      height: 12px;
-      margin: 0.5rem 0 1rem;
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--surface);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1100px; margin: 0 auto;
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem; color: var(--ink);
+      text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .logo span { color: var(--blue); }
+    .nav-links { list-style: none; display: flex; gap: 2rem; }
+    .nav-links a {
+      text-decoration: none; font-size: 0.875rem;
+      font-weight: 500; color: var(--ink-mid); transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-pill {
+      background: var(--ink); color: white;
+      padding: 0.45rem 1.2rem; border-radius: 50px;
+      font-size: 0.8rem; font-weight: 600;
+      text-decoration: none; transition: background .2s;
+    }
+    .nav-pill:hover { background: var(--blue); }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      background: linear-gradient(135deg, #0b1120 0%, #1e3a5f 100%);
+      padding: 3.5rem 2rem 4rem;
+      text-align: center; color: white;
+    }
+    .page-header-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+      color: #a5f3fc; padding: 0.35rem 1rem; border-radius: 50px;
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.6px; margin-bottom: 1.25rem;
+    }
+    .page-header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.5rem; line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+    .page-header p { color: #94a3b8; font-size: 0.95rem; }
+
+    /* ── MAIN CONTAINER ── */
+    .main {
+      max-width: 1000px; margin: -2rem auto 4rem;
+      padding: 0 2rem;
+      position: relative; z-index: 1;
+    }
+
+    /* ── VERDICT CARD ── */
+    .verdict {
+      background: white; border-radius: 1.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
       overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
     }
-    .confidence-fill {
-      height: 100%;
-      border-radius: 50px;
-      transition: width 1s ease;
+    .verdict-top {
+      padding: 2.5rem;
+      display: flex; align-items: flex-start;
+      justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;
     }
-    .fill-layak { background: linear-gradient(90deg, #10b981, #34d399); }
-    .fill-tidak { background: linear-gradient(90deg, #ef4444, #f87171); }
+    .verdict-top.layak { border-left: 8px solid var(--green); }
+    .verdict-top.tidak { border-left: 8px solid var(--red); }
 
-    .advice-text {
-      font-size: 1.05rem;
-      line-height: 1.7;
-      color: #1e293b;
-      margin-top: 0.75rem;
+    .verdict-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 0.4rem 1.25rem; border-radius: 50px;
+      font-size: 0.78rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 0.75rem;
+    }
+    .badge-layak { background: var(--green-lt); color: var(--green-dk); }
+    .badge-tidak { background: var(--red-lt);   color: var(--red-dk); }
+
+    .verdict-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem; line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    .verdict-desc { font-size: 0.9rem; color: var(--ink-mid); max-width: 480px; }
+
+    /* Confidence meter */
+    .conf-block { text-align: right; min-width: 200px; }
+    .conf-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-soft); margin-bottom: 6px; }
+    .conf-number {
+      font-family: 'DM Serif Display', serif;
+      font-size: 3.2rem; line-height: 1;
+      margin-bottom: 8px;
+    }
+    .conf-number.layak { color: var(--green-dk); }
+    .conf-number.tidak { color: var(--red-dk); }
+    .conf-bar { height: 10px; background: #e2e8f0; border-radius: 50px; overflow: hidden; width: 200px; }
+    .conf-fill { height: 100%; border-radius: 50px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+    .cf-layak { background: linear-gradient(90deg, var(--green), #34d399); }
+    .cf-tidak { background: linear-gradient(90deg, var(--red), #f87171); }
+
+    /* ── ACTION TAGS ── */
+    .verdict-actions {
+      padding: 1.25rem 2.5rem;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex; gap: 0.75rem; flex-wrap: wrap;
+    }
+    .action-tag {
+      background: white; border: 1.5px solid var(--border);
+      border-radius: 50px; padding: 0.4rem 1rem;
+      font-size: 0.8rem; font-weight: 600; color: var(--ink-mid);
+    }
+    .action-tag.green { border-color: #6ee7b7; color: var(--green-dk); background: var(--green-lt); }
+    .action-tag.red   { border-color: #fca5a5; color: var(--red-dk);   background: var(--red-lt); }
+
+    /* ── SECTION BLOCK ── */
+    .block {
+      background: white; border-radius: 1.5rem;
+      border: 1px solid var(--border);
+      padding: 2rem; margin-bottom: 1.5rem;
+    }
+    .block-title {
+      font-size: 0.85rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .5px;
+      color: var(--ink-soft); margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: 8px;
     }
 
-    .result-stats {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1.2rem;
-      flex-wrap: wrap;
-    }
-    .stat-item {
-      background: #f1f5f9;
-      padding: 0.5rem 1rem;
-      border-radius: 40px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #0f172a;
-    }
-
-    .ai-badge-result {
-      display: inline-block;
-      background: rgba(15,23,42,0.07);
-      border-radius: 60px;
-      padding: 0.3rem 1rem;
-      font-size: 0.8rem;
-      margin-bottom: 1rem;
-      color: #6366f1;
-      border: 1px solid #c7d2fe;
-    }
-
-    .input-summary {
-      background: linear-gradient(120deg, #eef2ff, #ffffff);
-      border-radius: 1.5rem;
-      padding: 1.5rem;
-      margin-top: 2rem;
-      border: 1px solid #cbd5e1;
-    }
-    .input-summary h3 {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 1rem;
-      font-size: 1.1rem;
-      color: #0f172a;
-    }
-    .input-grid {
+    /* ── DATA INPUT GRID ── */
+    .data-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 0.75rem;
     }
-    .input-item {
-      background: white;
-      border-radius: 0.75rem;
-      padding: 0.6rem 1rem;
-      border: 1px solid #e2e8f0;
+    .data-item {
+      background: var(--surface); border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
     }
-    .input-item .label {
-      font-size: 0.75rem;
-      color: #64748b;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
+    .data-label {
+      font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .4px;
+      color: var(--ink-soft); margin-bottom: 3px;
     }
-    .input-item .value {
-      font-size: 0.95rem;
-      color: #0f172a;
-      font-weight: 600;
-      margin-top: 2px;
+    .data-value { font-size: 0.92rem; font-weight: 700; color: var(--ink); }
+    .data-item.highlight { background: var(--blue-lt); border-color: #bfdbfe; }
+    .data-item.highlight .data-value { color: var(--blue); }
+
+    /* ── RASIO BARS ── */
+    .rasio-row { display: flex; flex-direction: column; gap: 1rem; }
+    .rasio-item {}
+    .rasio-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 6px;
+    }
+    .rasio-name { font-size: 0.85rem; font-weight: 600; color: var(--ink-mid); }
+    .rasio-val  { font-size: 0.85rem; font-weight: 800; }
+    .rasio-bar  { height: 8px; background: #e2e8f0; border-radius: 50px; overflow: hidden; }
+    .rasio-fill { height: 100%; border-radius: 50px; }
+    .rf-blue  { background: var(--blue); }
+    .rf-teal  { background: var(--teal); }
+    .rf-amber { background: var(--amber); }
+    .rf-red   { background: var(--red); }
+
+    /* ── REKOMENDASI ── */
+    .rec-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+    .rec-list li {
+      display: flex; gap: 12px; align-items: flex-start;
+      font-size: 0.9rem; color: var(--ink-mid); line-height: 1.55;
+    }
+    .rec-list li::before {
+      content: "→"; color: var(--blue);
+      font-weight: 800; flex-shrink: 0; margin-top: 1px;
     }
 
-    .btn-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: white;
-      padding: 0.9rem 2rem;
-      border-radius: 60px;
-      text-decoration: none;
-      font-weight: 600;
-      margin-top: 2rem;
-      transition: all 0.3s;
-      border: 1px solid rgba(99,102,241,0.3);
+    /* ── ERROR STATE ── */
+    .error-block {
+      background: var(--red-lt); border: 1.5px solid #fca5a5;
+      border-radius: 1.5rem; padding: 2rem;
+      color: var(--red-dk);
     }
-    .btn-back:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
-      border-color: #6366f1;
-    }
-    .btn-ulang {
-      background: linear-gradient(135deg, #6366f1, #818cf8);
-      margin-left: 1rem;
-    }
-    .btn-ulang:hover { border-color: white; }
 
+    /* ── NAV BUTTONS ── */
+    .nav-buttons {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      justify-content: center; margin-top: 2.5rem;
+    }
+    .btn-nav {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 0.85rem 2rem; border-radius: 50px;
+      text-decoration: none; font-weight: 700; font-size: 0.88rem;
+      transition: all .2s;
+    }
+    .btn-dark {
+      background: var(--ink); color: white;
+      border: 1.5px solid transparent;
+    }
+    .btn-dark:hover { background: #1e293b; transform: translateY(-1px); }
+    .btn-blue {
+      background: var(--blue); color: white;
+      box-shadow: 0 4px 14px rgba(37,99,235,.35);
+    }
+    .btn-blue:hover { background: #1d4ed8; transform: translateY(-1px); }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center; padding: 2rem;
+      font-size: 0.8rem; color: var(--ink-soft);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      .result-hero { padding: 1.25rem; }
-      .result-card { padding: 1.25rem; }
-      .btn-ulang   { margin-left: 0; margin-top: 0.75rem; }
+      .verdict-top { flex-direction: column; }
+      .conf-block { text-align: left; }
+      .conf-bar { width: 100%; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 500px) {
+      .page-header h1 { font-size: 1.8rem; }
+      .verdict-title { font-size: 1.5rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ── NAVBAR ─────────────────────────────────────────────────────── -->
+  <!-- ── NAVBAR ── -->
   <nav class="navbar">
-    <div class="container nav-container">
-      <div class="logo">💳 KreditSmart</div>
+    <div class="nav-inner">
+      <a href="/" class="logo">💳 <span>Kredit</span>Smart</a>
       <ul class="nav-links">
         <li><a href="/">Beranda</a></li>
-        <li><a href="/#tentang">Tentang</a></li>
+        <li><a href="/#fitur">Fitur</a></li>
         <li><a href="/#teknologi">Teknologi</a></li>
         <li><a href="/#prediksi">Prediksi</a></li>
       </ul>
+      <a href="/#prediksi" class="nav-pill">Prediksi Ulang →</a>
     </div>
   </nav>
 
-  <!-- ── HERO RESULT ────────────────────────────────────────────────── -->
-  <section class="hero-section" style="padding: 2rem 0 3rem; min-height: auto;">
-    <div class="container hero-content" style="flex-direction: column; text-align: center;">
-      <div class="ai-active-badge" style="position:relative; margin: 0 auto 1rem; display:inline-block; width:fit-content;">
-        🟢 AI Analysis Complete
-      </div>
-      <h1 style="font-size:2.5rem;">
-        Hasil <span class="highlight-blue">Analisis</span> <span class="highlight-green">Kelayakan Kredit</span>
-      </h1>
-      <p style="max-width:680px; margin:1rem auto;">
-        Berdasarkan profil keuangan nasabah, sistem AI memberikan rekomendasi kelayakan pinjaman berikut.
-      </p>
+  <!-- ── PAGE HEADER ── -->
+  <div class="page-header">
+    <div class="page-header-eyebrow">🤖 Analisis AI Selesai</div>
+    <h1>Hasil Analisis<br>Kelayakan Kredit</h1>
+    <p>Random Forest · 18 Fitur · StandardScaler · SMOTE-balanced Model</p>
+  </div>
+
+  <!-- ── MAIN CONTENT ── -->
+  <div class="main">
+
+    {% if error %}
+    <!-- Error state -->
+    <div class="error-block">
+      <h2 style="margin-bottom:.5rem;">⚠️ Terjadi Kesalahan</h2>
+      <p>{{ error }}</p>
     </div>
-  </section>
 
-  <!-- ── RESULT CONTENT ─────────────────────────────────────────────── -->
-  <div class="container" style="max-width:960px; margin:0 auto 4rem;">
-    <div class="result-hero">
+    {% elif prediction %}
 
-      <div class="ai-badge-result">
-        🤖 Analisis oleh Random Forest AI &nbsp;|&nbsp; 18 Fitur Dipertimbangkan
-      </div>
-
-      {% if error %}
-      <!-- Error state -->
-      <div class="result-card tidak">
-        <h2>⚠️ Terjadi Kesalahan</h2>
-        <p class="advice-text">{{ error }}</p>
-      </div>
-
-      {% elif prediction %}
-      <!-- ── VERDICT CARD ───────────────────────────────────────── -->
-      <div class="result-card {% if prediction == 'Layak' %}layak{% else %}tidak{% endif %}">
-
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
-          <div>
-            {% if prediction == "Layak" %}
-              <div class="status-badge badge-layak">✅ LAYAK</div>
-              <h2 style="margin:0; font-size:1.8rem; font-weight:800;">Kredit Direkomendasikan</h2>
-            {% else %}
-              <div class="status-badge badge-tidak">❌ TIDAK LAYAK</div>
-              <h2 style="margin:0; font-size:1.8rem; font-weight:800;">Kredit Tidak Direkomendasikan</h2>
-            {% endif %}
-          </div>
-          <div style="text-align:right; min-width:180px;">
-            <div style="font-size:0.8rem; color:#64748b; font-weight:600; margin-bottom:4px;">TINGKAT KEYAKINAN MODEL</div>
-            <div style="font-size:2rem; font-weight:800; color:{% if prediction == 'Layak' %}#065f46{% else %}#991b1b{% endif %};">
-              {{ confidence }}%
-            </div>
-            <div class="confidence-bar">
-              <div class="confidence-fill {% if prediction == 'Layak' %}fill-layak{% else %}fill-tidak{% endif %}"
-                   style="width: {{ confidence }}%;"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="advice-text">
+    <!-- ── VERDICT ── -->
+    <div class="verdict">
+      <div class="verdict-top {% if prediction == 'Layak' %}layak{% else %}tidak{% endif %}">
+        <div>
           {% if prediction == "Layak" %}
-            <p>
-              🎉 <strong>Nasabah memenuhi kriteria kelayakan kredit.</strong>
-              Profil keuangan menunjukkan risiko rendah dengan riwayat kredit yang baik dan kapasitas pembayaran memadai.
-              Pinjaman dapat diproses sesuai prosedur standar lembaga keuangan.
-            </p>
-            <div class="result-stats">
-              <div class="stat-item">📋 Proses pengajuan lanjut</div>
-              <div class="stat-item">🔍 Verifikasi dokumen pendukung</div>
-              <div class="stat-item">📅 Tetapkan jadwal cicilan</div>
-            </div>
+            <div class="verdict-badge badge-layak">✅ LAYAK</div>
+            <div class="verdict-title">Kredit Direkomendasikan</div>
+            <p class="verdict-desc">Profil keuangan nasabah menunjukkan kapasitas pembayaran yang memadai dengan tingkat risiko rendah berdasarkan 18 fitur yang dianalisis.</p>
           {% else %}
-            <p>
-              ⚠️ <strong>Nasabah belum memenuhi kriteria kelayakan kredit.</strong>
-              Terdapat indikasi risiko gagal bayar berdasarkan profil yang dianalisis.
-              Disarankan untuk melakukan tinjauan ulang atau mempertimbangkan produk kredit dengan nilai lebih rendah.
-            </p>
-            <div class="result-stats">
-              <div class="stat-item">📉 Tinjau rasio hutang</div>
-              <div class="stat-item">💳 Perbaiki skor kredit terlebih dahulu</div>
-              <div class="stat-item">🔄 Ajukan ulang setelah 6 bulan</div>
-            </div>
+            <div class="verdict-badge badge-tidak">❌ TIDAK LAYAK</div>
+            <div class="verdict-title">Kredit Tidak Direkomendasikan</div>
+            <p class="verdict-desc">Terdapat indikasi risiko gagal bayar berdasarkan profil keuangan yang dianalisis. Tinjau ulang atau ajukan produk dengan nilai lebih rendah.</p>
           {% endif %}
         </div>
-      </div>
-
-      <!-- ── RINGKASAN DATA INPUT ───────────────────────────────── -->
-      {% if input_data %}
-      <div class="input-summary">
-        <h3>📋 <span>Ringkasan Data Nasabah</span></h3>
-        <div class="input-grid">
-          {% for key, value in input_data.items() %}
-          <div class="input-item">
-            <div class="label">{{ key | replace('_', ' ') | title }}</div>
-            <div class="value">{{ value }}</div>
+        <div class="conf-block">
+          <div class="conf-label">Tingkat Keyakinan Model</div>
+          <div class="conf-number {% if prediction == 'Layak' %}layak{% else %}tidak{% endif %}">{{ confidence }}%</div>
+          <div class="conf-bar">
+            <div class="conf-fill {% if prediction == 'Layak' %}cf-layak{% else %}cf-tidak{% endif %}"
+                 style="width: {{ confidence }}%;"></div>
           </div>
-          {% endfor %}
         </div>
       </div>
-      {% endif %}
 
-      <!-- ── REKOMENDASI UMUM ───────────────────────────────────── -->
-      <div style="background:linear-gradient(120deg,#eef2ff,#ffffff); border-radius:1.5rem; padding:1.5rem; margin-top:2rem; border:1px solid #cbd5e1;">
-        <h3 style="display:flex; align-items:center; gap:8px; margin-bottom:1rem;">
-          📘 <span>Rekomendasi dari KreditSmart</span>
-        </h3>
-        <ul style="line-height:1.8; color:#1e293b;">
-          <li>🔹 Pastikan semua dokumen identitas dan keuangan dalam kondisi valid dan terkini.</li>
-          <li>🔹 Pertahankan skor kredit di atas 650 dengan membayar tagihan tepat waktu.</li>
-          <li>🔹 Jaga rasio hutang terhadap pendapatan di bawah 40% untuk kelayakan optimal.</li>
-          <li>🔹 Simpan catatan riwayat kredit yang bersih minimal 12 bulan sebelum pengajuan.</li>
-        </ul>
+      <div class="verdict-actions">
+        {% if prediction == "Layak" %}
+          <span class="action-tag green">📋 Lanjutkan pengajuan</span>
+          <span class="action-tag green">🔍 Verifikasi dokumen pendukung</span>
+          <span class="action-tag green">📅 Tetapkan jadwal cicilan</span>
+          <span class="action-tag">📝 Arsipkan hasil analisis</span>
+        {% else %}
+          <span class="action-tag red">📉 Tinjau rasio hutang</span>
+          <span class="action-tag red">💳 Perbaiki skor kredit</span>
+          <span class="action-tag red">🔄 Ajukan ulang setelah 6 bulan</span>
+          <span class="action-tag">📞 Konsultasi analis kredit</span>
+        {% endif %}
       </div>
-
-      {% else %}
-      <!-- Fallback jika tidak ada prediksi -->
-      <div class="result-card tidak">
-        <h2>⚠️ Data tidak ditemukan</h2>
-        <p>Silakan lakukan prediksi terlebih dahulu melalui halaman utama.</p>
-      </div>
-      {% endif %}
-
-      <!-- ── TOMBOL NAVIGASI ───────────────────────────────────── -->
-      <div style="text-align:center; margin-top:2.5rem; display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
-        <a href="/" class="btn-back">← Kembali ke Beranda</a>
-        <a href="/#prediksi" class="btn-back btn-ulang">🔄 Prediksi Ulang</a>
-      </div>
-
-    </div><!-- /result-hero -->
-
-    <!-- ── FOOTER ──────────────────────────────────────────────── -->
-    <div style="text-align:center; margin-top:3rem; font-size:0.85rem; color:#475569; border-top:1px solid #e2e8f0; padding-top:2rem;">
-      <p>© 2025 KreditSmart — Sistem Analisis Kelayakan Kredit berbasis AI | Random Forest & Flask</p>
     </div>
-  </div><!-- /container -->
+
+    <!-- ── RINGKASAN DATA NASABAH ── -->
+    {% if input_data %}
+    <div class="block">
+      <div class="block-title">📋 Data Nasabah yang Dianalisis</div>
+      <div class="data-grid">
+        {% for key, value in input_data.items() %}
+          {% set k = key | lower %}
+          <div class="data-item {% if 'skor_kredit' in k or 'pendapatan' in k %}highlight{% endif %}">
+            <div class="data-label">{{ key | replace('_', ' ') | title }}</div>
+            <div class="data-value">{{ value }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- ── RASIO KEUANGAN ── -->
+    {% if input_data %}
+    <div class="block">
+      <div class="block-title">📐 Analisis Rasio Keuangan</div>
+      <div class="rasio-row">
+        {% set dti = input_data.get('rasio_hutang_terhadap_pendapatan', input_data.get('Rasio Hutang Terhadap Pendapatan', 0)) | float %}
+        {% set lti = input_data.get('rasio_pinjaman_terhadap_pendapatan', input_data.get('Rasio Pinjaman Terhadap Pendapatan', 0)) | float %}
+        {% set pti = input_data.get('rasio_pembayaran_terhadap_pendapatan', input_data.get('Rasio Pembayaran Terhadap Pendapatan', 0)) | float %}
+
+        <div class="rasio-item">
+          <div class="rasio-header">
+            <span class="rasio-name">Rasio Hutang / Pendapatan (DTI)</span>
+            <span class="rasio-val" style="color: {% if dti > 0.4 %}var(--red){% else %}var(--green){% endif %}">
+              {{ "%.1f"|format(dti * 100) }}%
+            </span>
+          </div>
+          <div class="rasio-bar">
+            <div class="rasio-fill {% if dti > 0.4 %}rf-red{% else %}rf-blue{% endif %}"
+                 style="width: {{ [dti * 100, 100] | min }}%"></div>
+          </div>
+          <div style="font-size:.75rem; color:var(--ink-soft); margin-top:4px;">
+            Ideal &lt; 40% · {% if dti < 0.4 %}✓ Baik{% else %}⚠ Di atas batas aman{% endif %}
+          </div>
+        </div>
+
+        <div class="rasio-item">
+          <div class="rasio-header">
+            <span class="rasio-name">Rasio Pinjaman / Pendapatan (LTI)</span>
+            <span class="rasio-val" style="color: {% if lti > 2 %}var(--red){% elif lti > 1 %}var(--amber){% else %}var(--green){% endif %}">
+              {{ "%.2f"|format(lti) }}x
+            </span>
+          </div>
+          <div class="rasio-bar">
+            <div class="rasio-fill {% if lti > 2 %}rf-red{% elif lti > 1 %}rf-amber{% else %}rf-teal{% endif %}"
+                 style="width: {{ [lti * 33.3, 100] | min }}%"></div>
+          </div>
+          <div style="font-size:.75rem; color:var(--ink-soft); margin-top:4px;">
+            Ideal &lt; 1x pendapatan tahunan
+          </div>
+        </div>
+
+        <div class="rasio-item">
+          <div class="rasio-header">
+            <span class="rasio-name">Rasio Pembayaran / Pendapatan</span>
+            <span class="rasio-val" style="color: {% if pti > 0.3 %}var(--red){% else %}var(--green){% endif %}">
+              {{ "%.1f"|format(pti * 100) }}%
+            </span>
+          </div>
+          <div class="rasio-bar">
+            <div class="rasio-fill {% if pti > 0.3 %}rf-red{% else %}rf-teal{% endif %}"
+                 style="width: {{ [pti * 100, 100] | min }}%"></div>
+          </div>
+          <div style="font-size:.75rem; color:var(--ink-soft); margin-top:4px;">
+            Ideal &lt; 30% pendapatan · cicilan masih terjangkau
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- ── REKOMENDASI ── -->
+    <div class="block">
+      <div class="block-title">📘 Rekomendasi KreditSmart</div>
+      <ul class="rec-list">
+        {% if prediction == "Layak" %}
+          <li>Lakukan verifikasi dokumen identitas, slip gaji/laporan keuangan, dan NPWP sebelum pencairan dana.</li>
+          <li>Pastikan skor kredit nasabah dipertahankan di atas 650 sepanjang masa pinjaman berjalan.</li>
+          <li>Tetapkan jadwal cicilan otomatis untuk meminimalkan risiko keterlambatan pembayaran.</li>
+          <li>Lakukan tinjauan berkala setiap 6 bulan terhadap kapasitas bayar nasabah selama tenor berlangsung.</li>
+        {% else %}
+          <li>Sarankan nasabah untuk melunasi tunggakan yang ada sebelum mengajukan pinjaman baru.</li>
+          <li>Pertimbangkan produk kredit dengan jumlah lebih kecil atau tenor lebih panjang untuk menurunkan rasio pembayaran.</li>
+          <li>Minta nasabah meningkatkan skor kredit minimal ke angka 650 sebelum pengajuan ulang.</li>
+          <li>Jaga rasio hutang terhadap pendapatan di bawah 40% — kurangi hutang aktif yang ada saat ini.</li>
+          <li>Simpan catatan riwayat kredit bersih minimal 12 bulan berturut-turut sebelum pengajuan ulang.</li>
+        {% endif %}
+      </ul>
+    </div>
+
+    {% else %}
+    <!-- Fallback -->
+    <div class="error-block">
+      <h2 style="margin-bottom:.5rem;">⚠️ Data Tidak Ditemukan</h2>
+      <p>Silakan lakukan prediksi terlebih dahulu melalui halaman utama.</p>
+    </div>
+    {% endif %}
+
+    <!-- ── TOMBOL NAVIGASI ── -->
+    <div class="nav-buttons">
+      <a href="/" class="btn-nav btn-dark">← Kembali ke Beranda</a>
+      <a href="/#prediksi" class="btn-nav btn-blue">🔄 Prediksi Ulang</a>
+    </div>
+
+    <!-- Footer -->
+<!-- Footer -->
+<div style="text-align:center; margin-top:3rem; padding-top:2rem; border-top:1px solid var(--border);">
+  <p style="font-size:1rem; font-weight:600; color:var(--ink); margin-bottom:0.5rem;">
+    Ujian Akhir Semester
+  </p>
+
+  <p style="font-size:.9rem; color:var(--ink-soft); line-height:1.8;">
+    Mata Kuliah Project Berbasis AI<br>
+    Dosen: Sadam Muhammad Natzir, M.Kom<br><br>
+
+    <strong>Oleh:</strong><br>
+    1. Cornelis Yudhistira Laatrehe (23120033)<br>
+    2. Yevta Andriano Napa (23120032)<br>
+    3. Anang Maulana Kaharudin (23120038)<br><br>
+
+    STIKOM Uyelindo Kupang<br>
+    © 2026 KreditSmart — Sistem Analisis Kelayakan Kredit Berbasis AI | Random Forest · SMOTE · Flask · Scikit-learn
+  </p>
+</div>
+
+  </div><!-- /main -->
 
   <script>
-    // Smooth scroll back to section
-    document.querySelectorAll('a[href^="/#"]').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        const hash = this.getAttribute('href');
-        if (hash === '/#') return;
-        e.preventDefault();
-        window.location.href = hash;
+    // Animate confidence bar on load
+    window.addEventListener('load', () => {
+      const fill = document.querySelector('.conf-fill');
+      if (fill) {
+        const w = fill.style.width;
+        fill.style.width = '0%';
+        setTimeout(() => { fill.style.width = w; }, 200);
+      }
+      // Animate rasio bars
+      document.querySelectorAll('.rasio-fill').forEach(el => {
+        const w = el.style.width;
+        el.style.width = '0%';
+        setTimeout(() => { el.style.width = w; }, 300);
       });
     });
   </script>

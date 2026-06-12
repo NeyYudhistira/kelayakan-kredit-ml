@@ -115,6 +115,9 @@ def predict():
             "tujuan_pinjaman": tujuan_pinjaman,
             "jumlah_pinjaman": f"Rp {int(jumlah_pinjaman):,}".replace(",", "."),
             "suku_bunga": suku_bunga,
+            "rasio_hutang_terhadap_pendapatan": rasio_hutang,
+            "rasio_pinjaman_terhadap_pendapatan": rasio_pinjaman,
+            "rasio_pembayaran_terhadap_pendapatan": rasio_pembayaran,
         }
 
         return render_template(
