@@ -256,16 +256,78 @@
       border-top: 1px solid var(--border);
     }
 
+    /* ── HAMBURGER MENU ── */
+    .nav-hamburger {
+      display: none;
+      background: none; border: none; cursor: pointer;
+      padding: 6px; border-radius: 8px;
+      transition: background .2s;
+    }
+    .nav-hamburger:hover { background: var(--surface); }
+    .nav-hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--ink); border-radius: 2px;
+      transition: all .3s;
+      margin: 5px 0;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile drawer */
+    .mobile-nav {
+      display: none;
+      position: fixed; top: 60px; left: 0; right: 0;
+      background: white; border-bottom: 1px solid var(--border);
+      z-index: 99;
+      padding: 1rem 1.5rem 1.5rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+    .mobile-nav.open { display: block; }
+    .mobile-nav ul { list-style: none; display: flex; flex-direction: column; }
+    .mobile-nav ul li a {
+      display: block; padding: 0.75rem 0;
+      text-decoration: none; font-size: 1rem;
+      font-weight: 500; color: var(--ink-mid);
+      border-bottom: 1px solid var(--border);
+      transition: color .2s;
+    }
+    .mobile-nav ul li:last-child a { border-bottom: none; }
+    .mobile-nav ul li a:hover { color: var(--blue); }
+    .mobile-nav .nav-pill-mobile {
+      display: block; margin-top: 1rem;
+      background: var(--blue); color: white;
+      padding: 0.75rem 1.5rem; border-radius: 50px;
+      text-align: center; text-decoration: none;
+      font-weight: 700; font-size: 0.9rem;
+    }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       .verdict-top { flex-direction: column; }
-      .conf-block { text-align: left; }
+      .conf-block { text-align: left; min-width: unset; width: 100%; }
       .conf-bar { width: 100%; }
-      .nav-links { display: none; }
+      .verdict-top { padding: 1.75rem 1.25rem; }
+      .verdict-actions { padding: 1rem 1.25rem; }
+      .block { padding: 1.5rem 1.25rem; }
+      .main { padding: 0 1rem; margin-bottom: 3rem; }
+      .page-header { padding: 2.5rem 1.25rem 3rem; }
+      .data-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+      .nav-buttons { flex-direction: column; align-items: stretch; }
+      .btn-nav { justify-content: center; }
     }
-    @media (max-width: 500px) {
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .nav-pill { display: none; }
+      .nav-hamburger { display: block; }
+
       .page-header h1 { font-size: 1.8rem; }
+      .page-header p { font-size: 0.82rem; }
       .verdict-title { font-size: 1.5rem; }
+      .conf-number { font-size: 2.5rem; }
+
+      .data-grid { grid-template-columns: 1fr 1fr; }
+      .rasio-header { flex-wrap: wrap; gap: 4px; }
     }
   </style>
 </head>
@@ -282,8 +344,22 @@
         <li><a href="/#prediksi">Prediksi</a></li>
       </ul>
       <a href="/#prediksi" class="nav-pill">Prediksi Ulang →</a>
+      <button class="nav-hamburger" id="navToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
+
+  <!-- Mobile Navigation Drawer -->
+  <div class="mobile-nav" id="mobileNav">
+    <ul>
+      <li><a href="/" onclick="closeMobileNav()">Beranda</a></li>
+      <li><a href="/#fitur" onclick="closeMobileNav()">Fitur</a></li>
+      <li><a href="/#teknologi" onclick="closeMobileNav()">Teknologi</a></li>
+      <li><a href="/#prediksi" onclick="closeMobileNav()">Prediksi</a></li>
+    </ul>
+    <a href="/#prediksi" class="nav-pill-mobile" onclick="closeMobileNav()">Prediksi Ulang →</a>
+  </div>
 
   <!-- ── PAGE HEADER ── -->
   <div class="page-header">
@@ -453,29 +529,35 @@
     </div>
 
     <!-- Footer -->
-<!-- Footer -->
-<div style="text-align:center; margin-top:3rem; padding-top:2rem; border-top:1px solid var(--border);">
-  <p style="font-size:1rem; font-weight:600; color:var(--ink); margin-bottom:0.5rem;">
-    Ujian Akhir Semester
-  </p>
-
-  <p style="font-size:.9rem; color:var(--ink-soft); line-height:1.8;">
-    Mata Kuliah Project Berbasis AI<br>
-    Dosen: Sadam Muhammad Natzir, M.Kom<br><br>
-
-    <strong>Oleh:</strong><br>
-    1. Cornelis Yudhistira Laatrehe (23120033)<br>
-    2. Yevta Andriano Napa (23120032)<br>
-    3. Anang Maulana Kaharudin (23120038)<br><br>
-
-    STIKOM Uyelindo Kupang<br>
-    © 2026 KreditSmart — Sistem Analisis Kelayakan Kredit Berbasis AI | Random Forest · SMOTE · Flask · Scikit-learn
-  </p>
-</div>
+    <footer style="text-align:center; margin-top:3rem; padding: 2rem 1rem; border-top:1px solid var(--border); font-size:0.8rem; color:var(--ink-soft); line-height:1.8;">
+      <p style="font-size:0.9rem; font-weight:700; color:var(--ink); margin-bottom:0.5rem;">Ujian Akhir Semester</p>
+      <p>
+        Mata Kuliah Project Berbasis AI<br>
+        Dosen: Sadam Muhammad Natzir, M.Kom<br><br>
+        <strong>Oleh:</strong><br>
+        1. Cornelis Yudhistira Laatrehe (23120033)<br>
+        2. Yevta Andriano Napa (23120032)<br>
+        3. Anang Maulana Kaharudin (23120038)<br><br>
+        STIKOM Uyelindo Kupang<br>
+        © 2026 KreditSmart — Sistem Analisis Kelayakan Kredit Berbasis AI | Random Forest · SMOTE · Flask · Scikit-learn
+      </p>
+    </footer>
 
   </div><!-- /main -->
 
   <script>
+    // Hamburger Menu
+    const navToggle = document.getElementById('navToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    navToggle.addEventListener('click', () => {
+      navToggle.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+    });
+    function closeMobileNav() {
+      navToggle.classList.remove('open');
+      mobileNav.classList.remove('open');
+    }
+
     // Animate confidence bar on load
     window.addEventListener('load', () => {
       const fill = document.querySelector('.conf-fill');
