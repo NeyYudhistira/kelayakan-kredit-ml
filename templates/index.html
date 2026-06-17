@@ -28,14 +28,11 @@
       --radius:   1rem;
     }
 
-    html { scroll-behavior: smooth; }
-
     body {
       font-family: 'Inter', sans-serif;
       background: var(--surface);
       color: var(--ink);
       line-height: 1.6;
-      overflow-x: hidden;
     }
 
     /* ── NAVBAR ── */
@@ -130,21 +127,6 @@
       padding: 1.75rem;
       box-shadow: 0 25px 50px -12px rgba(0,0,0,0.12);
       border: 1px solid var(--border);
-      min-height: 420px;
-    }
-    .logo-card {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-    }
-    .hero-logo {
-      width: 100%;
-      max-width: 280px;
-      height: auto;
-      object-fit: contain;
-      display: block;
     }
     .hero-card-header {
       display: flex; align-items: center; justify-content: space-between;
@@ -226,9 +208,8 @@
     /* ── TEKNOLOGI ── */
     .tech-strip {
       background: var(--ink); border-radius: 1.5rem;
-      padding: 3.5rem;
-      max-width: 1200px;
-      margin: 0 auto;
+      padding: 3.5rem; margin: 0 2rem;
+      max-width: 1200px; margin: 0 auto 0;
     }
     .tech-strip .section-title { color: white; }
     .tech-strip .section-desc { color: #94a3b8; }
@@ -357,20 +338,106 @@
       border-top: 1px solid var(--border);
     }
 
+    /* ── HAMBURGER MENU ── */
+    .nav-hamburger {
+      display: none;
+      background: none; border: none; cursor: pointer;
+      padding: 6px; border-radius: 8px;
+      transition: background .2s;
+    }
+    .nav-hamburger:hover { background: var(--surface); }
+    .nav-hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--ink); border-radius: 2px;
+      transition: all .3s;
+      margin: 5px 0;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile drawer */
+    .mobile-nav {
+      display: none;
+      position: fixed; top: 60px; left: 0; right: 0;
+      background: white; border-bottom: 1px solid var(--border);
+      z-index: 99;
+      padding: 1rem 1.5rem 1.5rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+    .mobile-nav.open { display: block; }
+    .mobile-nav ul { list-style: none; display: flex; flex-direction: column; gap: 0; }
+    .mobile-nav ul li a {
+      display: block; padding: 0.75rem 0;
+      text-decoration: none; font-size: 1rem;
+      font-weight: 500; color: var(--ink-mid);
+      border-bottom: 1px solid var(--border);
+      transition: color .2s;
+    }
+    .mobile-nav ul li:last-child a { border-bottom: none; }
+    .mobile-nav ul li a:hover { color: var(--blue); }
+    .mobile-nav .nav-pill-mobile {
+      display: block; margin-top: 1rem;
+      background: var(--blue); color: white;
+      padding: 0.75rem 1.5rem; border-radius: 50px;
+      text-align: center; text-decoration: none;
+      font-weight: 700; font-size: 0.9rem;
+    }
+
+    /* ── HERO LOGO CARD ── */
+    .logo-card {
+      display: flex; align-items: center; justify-content: center;
+      background: white; border-radius: 1.5rem;
+      padding: 2rem;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.12);
+      border: 1px solid var(--border);
+      min-height: 260px;
+    }
+    .hero-logo {
+      max-width: 100%; max-height: 220px;
+      object-fit: contain;
+    }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
-      .hero { grid-template-columns: 1fr; }
-      .hero-card { display: none; }
+      .hero { grid-template-columns: 1fr; gap: 2.5rem; padding: 3rem 1.5rem 3rem; }
+      .logo-card { min-height: 180px; max-width: 320px; margin: 0 auto; }
+      .hero-logo { max-height: 150px; }
       .features-grid { grid-template-columns: 1fr 1fr; }
-      .tech-grid { grid-template-columns: 1fr 1fr; }
+      .tech-grid { grid-template-columns: 1fr 1fr !important; }
       .form-grid.col4, .form-grid { grid-template-columns: 1fr 1fr; }
+      .form-group { padding: 1.5rem 1.25rem; }
+      .form-footer { flex-direction: column; align-items: stretch; }
+      .btn-submit { justify-content: center; }
     }
     @media (max-width: 600px) {
-      .hero h1 { font-size: 2.2rem; }
-      .features-grid { grid-template-columns: 1fr; }
-      .tech-grid { grid-template-columns: 1fr; }
-      .form-grid, .form-grid.col2, .form-grid.col4 { grid-template-columns: 1fr; }
       .nav-links { display: none; }
+      .nav-pill { display: none; }
+      .nav-hamburger { display: block; }
+
+      .hero { padding: 2.5rem 1rem 2rem; }
+      .hero h1 { font-size: 2rem; }
+      .hero p { font-size: 0.95rem; }
+      .hero-stats { gap: 1.25rem; flex-wrap: wrap; }
+      .logo-card { max-width: 100%; }
+
+      .features-grid { grid-template-columns: 1fr; }
+      .tech-grid { grid-template-columns: 1fr !important; }
+      .form-grid, .form-grid.col2, .form-grid.col4 { grid-template-columns: 1fr; }
+
+      .section { padding: 3rem 1rem; }
+      .section-title { font-size: 1.7rem; }
+      .form-section { padding: 3rem 1rem 4rem; }
+      .form-group { padding: 1.25rem 1rem; }
+      .form-footer { padding: 1.25rem 1rem; }
+      .group-sub { display: none; }
+
+      .tech-strip { border-radius: 1rem; padding: 2rem 1.25rem; }
+
+      footer { padding: 2rem 1rem; font-size: 0.78rem; line-height: 1.8; }
+
+      .btn-primary, .btn-ghost { width: 100%; text-align: center; justify-content: center; display: block; }
+      .hero-cta { flex-direction: column; }
     }
   </style>
 </head>
@@ -387,8 +454,22 @@
         <li><a href="#prediksi">Prediksi</a></li>
       </ul>
       <a href="#prediksi" class="nav-pill">Mulai Analisis →</a>
+      <button class="nav-hamburger" id="navToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
+
+  <!-- Mobile Navigation Drawer -->
+  <div class="mobile-nav" id="mobileNav">
+    <ul>
+      <li><a href="#beranda" onclick="closeMobileNav()">Beranda</a></li>
+      <li><a href="#fitur" onclick="closeMobileNav()">Fitur</a></li>
+      <li><a href="#teknologi" onclick="closeMobileNav()">Teknologi</a></li>
+      <li><a href="#prediksi" onclick="closeMobileNav()">Prediksi</a></li>
+    </ul>
+    <a href="#prediksi" class="nav-pill-mobile" onclick="closeMobileNav()">Mulai Analisis →</a>
+  </div>
 
   <!-- ── HERO ── -->
   <section id="beranda">
@@ -409,11 +490,9 @@
         </div>
       </div>
       <div class="hero-card logo-card">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="KreditSmart AI" class="hero-logo">
-      </div>
+    <img src="static//logo.png" alt="Kredit Smart AI" class="hero-logo">
+</div>
     </div>
-  </section>
-
   <hr class="divider">
 
   <!-- ── FITUR ── -->
@@ -462,7 +541,7 @@
     <div class="section-tag">Stack Teknologi</div>
     <h2 class="section-title">Dibangun di atas fondasi yang terpercaya</h2>
     <p class="section-desc">Kombinasi library machine learning industri standar untuk performa dan reproduktabilitas optimal.</p>
-    <div class="tech-grid" style="margin-top:2.5rem; display:grid; grid-template-columns: repeat(4,1fr); gap:1rem;">
+    <div class="tech-grid">
       <div class="feat-card">
         <div class="feat-icon ic-amber">🌲</div>
         <h3>Random Forest</h3>
@@ -493,8 +572,6 @@
     <div class="section-tag">Formulir Prediksi</div>
     <h2 class="section-title">Masukkan data nasabah untuk analisis</h2>
     <p class="section-desc">Lengkapi semua bidang di bawah ini. Rasio keuangan akan dihitung otomatis berdasarkan data yang diisi.</p>
-
-    <p class="section-desc" style="margin-top: 0.5rem; font-size: 0.92rem;">Pastikan angka diisi dengan benar agar hasil prediksi lebih akurat.</p>
 
     <form action="/predict" method="POST" class="form-wrap" id="kreditForm">
 
@@ -571,7 +648,7 @@
             <input type="number" name="aset_tabungan" id="aset_tabungan" min="0" placeholder="cth: 50000000" required>
           </div>
           <div class="form-field">
-            <label for="hutang_saat_ini">Utang Saat Ini (Rp)</label>
+            <label for="hutang_saat_ini">Hutang Saat Ini (Rp)</label>
             <input type="number" name="hutang_saat_ini" id="hutang_saat_ini" min="0" placeholder="cth: 10000000" required>
           </div>
         </div>
@@ -627,7 +704,7 @@
           <div class="form-field field-computed">
             <label for="rasio_hutang_terhadap_pendapatan">Rasio Hutang / Pendapatan</label>
             <input type="number" step="0.001" name="rasio_hutang_terhadap_pendapatan" id="rasio_hutang_terhadap_pendapatan" min="0" placeholder="0.000" required>
-            <div class="field-hint">utang_saat_ini ÷ pendapatan_tahunan</div>
+            <div class="field-hint">hutang_saat_ini ÷ pendapatan_tahunan</div>
           </div>
           <div class="form-field field-computed">
             <label for="rasio_pinjaman_terhadap_pendapatan">Rasio Pinjaman / Pendapatan</label>
@@ -672,16 +749,28 @@
   </p>
 </footer>
   <script>
+    // Hamburger Menu
+    const navToggle = document.getElementById('navToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    navToggle.addEventListener('click', () => {
+      navToggle.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+    });
+    function closeMobileNav() {
+      navToggle.classList.remove('open');
+      mobileNav.classList.remove('open');
+    }
+
     // Auto-compute rasio keuangan
     function computeRasio() {
       const pendapatan = parseFloat(document.getElementById('pendapatan_tahunan').value) || 0;
-      const utang      = parseFloat(document.getElementById('hutang_saat_ini').value) || 0;
+      const hutang     = parseFloat(document.getElementById('hutang_saat_ini').value) || 0;
       const pinjaman   = parseFloat(document.getElementById('jumlah_pinjaman').value) || 0;
       const bunga      = parseFloat(document.getElementById('suku_bunga').value) || 0;
 
       if (pendapatan > 0) {
         document.getElementById('rasio_hutang_terhadap_pendapatan').value
-          = (utang / pendapatan).toFixed(3);
+          = (hutang / pendapatan).toFixed(3);
         document.getElementById('rasio_pinjaman_terhadap_pendapatan').value
           = (pinjaman / pendapatan).toFixed(3);
         // Estimasi cicilan tahunan: pinjaman × suku bunga sederhana
